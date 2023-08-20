@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -154,8 +155,8 @@ if CACHE_ENABLED:
             "TIMEOUT": 300,  # Ручная регулировка времени жизни кеша в секундах, по умолчанию 300
         }
     }
-#Время жизни токена
+# Время жизни токена
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
