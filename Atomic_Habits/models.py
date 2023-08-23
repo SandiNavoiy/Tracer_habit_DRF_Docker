@@ -1,6 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
+from Atomic_Habits.validators import (
+    validate_related_habit_and_reward,
+    validate_execution_time,
+    validate_related_habit,
+    validate_good_habit,
+    validate_periodicity,
+)
 from users.models import NULLABLE, User
 
 
@@ -32,6 +39,14 @@ class Habits(models.Model):
 
     def __str__(self):
         return f"{self.user}, {self.place}"
+
+    def clean(self):
+        """Проверка данных перед сохранением"""
+        validate_related_habit_and_reward(self)
+        validate_execution_time(self.execution_time)
+        validate_related_habit(self)
+        validate_good_habit(self)
+        validate_periodicity(self.periodicity)
 
     class Meta:
         verbose_name = "привычка"

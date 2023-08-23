@@ -6,7 +6,6 @@ from Atomic_Habits.models import Habits
 @admin.register(Habits)
 class HabitsAdmin(admin.ModelAdmin):
     list_display = (
-        "email",
         "user",
         "activity",
         "reward",
