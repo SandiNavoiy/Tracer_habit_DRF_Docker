@@ -1,6 +1,7 @@
 from rest_framework import generics
 
 from Atomic_Habits.models import Habits
+from Atomic_Habits.pagination import HabitPaginator
 from Atomic_Habits.serializers import HabitSerializer
 
 
@@ -15,6 +16,7 @@ class HabitListAPIView(generics.ListAPIView):
 
     serializer_class = HabitSerializer
     queryset = Habits.objects.all()
+    pagination_class = HabitPaginator
 
 
 class HabitRetrieveAPIView(generics.RetrieveAPIView):

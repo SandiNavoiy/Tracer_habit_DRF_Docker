@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "Atomic_Habits",
     "drf_yasg",
     "rest_framework",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -155,6 +156,14 @@ if CACHE_ENABLED:
             "TIMEOUT": 300,  # Ручная регулировка времени жизни кеша в секундах, по умолчанию 300
         }
     }
+
+
+# Настройки JWT-токенов
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
 # Время жизни токена
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
