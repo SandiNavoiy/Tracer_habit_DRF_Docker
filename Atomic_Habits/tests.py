@@ -1,8 +1,11 @@
+from datetime import time
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.test import APITestCase
 
 from Atomic_Habits.models import Habits
+from Atomic_Habits.validators import validate_execution_time
 from Atomic_Habits.views import HabitListAPIView, HabitRetrieveAPIView, HabitDestroyAPIView, HabitUpdateAPIView
 from users.models import User
 
@@ -114,3 +117,45 @@ class HabitsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # Возвращаем оригинальные разрешения
         HabitDestroyAPIView.permission_classes = original_permissions
+
+
+
+
+
+    def test_validate_related_habit_and_reward(self):
+        """Тест  -Нельзя одновременно выбрать связанную привычку и указание вознаграждения"""
+        data = {
+            "place": "Город",
+            "time": "00:00",
+            "activity": "Гулять",
+            "good_habit_sign": False,
+            "periodicity": 2,
+            "reward": "Some Reward",
+            "execution_time": "00:01:00",
+            "of_publicity": False,
+            "user": self.user.id,
+            "relted_habbit": 1
+
+        }
+        response = self.client.post("/habbit/habit/create/", data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+
+    def test_validate_related_habit(self):
+        """Тест В связанные привычки могут попадать только привычки с признаком приятной привычки """
+        data = {
+            "place": "Город",
+            "time": "00:00",
+            "activity": "Гулять",
+            "good_habit_sign": False,
+            "periodicity": 2,
+            "reward": "",
+            "execution_time": "00:01:00",
+            "of_publicity": False,
+            "user": self.user.id,
+            "relted_habbit": 1  # Assuming there is a related habit with id 1
+        }
+        response = self.client.post("/habbit/habit/create/", data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
