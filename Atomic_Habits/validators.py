@@ -10,7 +10,7 @@ def validate_related_habit_and_reward(value):
 
 
 def validate_execution_time(value):
-    if value.total_seconds() > 120:
+    if value.execution_time() > 120:
         raise ValidationError("Время выполнения должно быть не больше 120 секунд.")
 
 
@@ -30,5 +30,5 @@ def validate_good_habit(value):
 
 def validate_periodicity(value):
     min_periodicity = timedelta(days=7)
-    if value < min_periodicity:
+    if value > min_periodicity:
         raise ValidationError("Нельзя выполнять привычку реже, чем 1 раз в 7 дней.")

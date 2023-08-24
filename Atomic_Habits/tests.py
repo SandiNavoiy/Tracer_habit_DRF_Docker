@@ -40,12 +40,12 @@ class HabitsTestCase(APITestCase):
         """Тест создания привычки"""
 
         data = {
-            "id": 2,
+
             "place": "Деревня",
             "time": "00:00",
             "activity": "Пить",
             "good_habit_sign": False,
-            "periodicity": 3,
+            "periodicity": 30,
             "reward": "",
             "execution_time": "00:02:00",
             "of_publicity": True,
@@ -53,6 +53,7 @@ class HabitsTestCase(APITestCase):
 
         }
         response = self.client.post("/habbit/habit/create/", data=data)
+        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_list_habit(self):
@@ -158,4 +159,25 @@ class HabitsTestCase(APITestCase):
         }
         response = self.client.post("/habbit/habit/create/", data=data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    # def test_validate_periodicity(self):
+    #     """Тест создания привычки с валидатором validate_periodicity"""
+    #
+    #     data = {
+    #
+    #         "place": "Деревня",
+    #         "time": "00:00",
+    #         "activity": "Пить",
+    #         "good_habit_sign": False,
+    #         "periodicity": 2,
+    #         "reward": "",
+    #         "execution_time": "00:02:00",
+    #         "of_publicity": True,
+    #         "user": self.user.id
+    #
+    #     }
+    #     response = self.client.post("/habbit/habit/create/", data=data)
+    #     print(response.json())
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
