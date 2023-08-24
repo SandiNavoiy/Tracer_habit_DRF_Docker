@@ -21,6 +21,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("user/", include("users.urls", namespace="user")),
+    path("habbit/", include("Atomic_Habits.urls", namespace="habbit")),
     path(
         "docs/",
         schema_view.with_ui("swagger", cache_timeout=0),
