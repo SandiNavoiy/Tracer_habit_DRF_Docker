@@ -10,7 +10,6 @@ from Atomic_Habits.views import HabitListAPIView, HabitRetrieveAPIView, HabitDes
 from users.models import User
 
 
-
 class HabitsTestCase(APITestCase):
     def setUp(self) -> None:
         """Общие данные"""
@@ -45,7 +44,7 @@ class HabitsTestCase(APITestCase):
             "time": "00:00",
             "activity": "Пить",
             "good_habit_sign": False,
-            "periodicity": 30,
+            "periodicity": 1,
             "reward": "",
             "execution_time": "00:02:00",
             "of_publicity": True,
@@ -53,8 +52,32 @@ class HabitsTestCase(APITestCase):
 
         }
         response = self.client.post("/habbit/habit/create/", data=data)
-        print(response.json())
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_validate_good_habit(self):
+        """Тест: У приятной привычки не может быть вознаграждения или связанной привычки."""
+
+
+        data = {
+            "place": "Город",
+            "time": "00:00",
+            "activity": "Гулять",
+            "good_habit_sign": True,
+            "periodicity": 3,
+            "reward": "еккуекн",
+            "execution_time": "00:01:00",
+            "of_publicity": True,
+            "user": self.user.id,  # Важно передать ID пользователя, а не объект пользователя
+        }
+
+        with self.assertRaises(ValidationError) as context:
+            Habits.objects.create(**data)
+
+        self.assertEqual(
+            context.exception.messages[0],
+            "У приятной привычки не может быть вознаграждения или связанной привычки."
+        )
 
     def test_list_habit(self):
         """Тест получения списка привычек"""
@@ -107,7 +130,6 @@ class HabitsTestCase(APITestCase):
         self.assertEqual(updated_habit.activity, updated_data["activity"])
         self.assertEqual(updated_habit.periodicity, updated_data["periodicity"])
 
-
     def test_delete_habit(self):
         """Тест удаления привычки"""
         # Временно изменяем разрешения на AllowAny
@@ -118,10 +140,6 @@ class HabitsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # Возвращаем оригинальные разрешения
         HabitDestroyAPIView.permission_classes = original_permissions
-
-
-
-
 
     def test_validate_related_habit_and_reward(self):
         """Тест  -Нельзя одновременно выбрать связанную привычку и указание вознаграждения"""
@@ -141,8 +159,6 @@ class HabitsTestCase(APITestCase):
         response = self.client.post("/habbit/habit/create/", data=data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
-
     def test_validate_related_habit(self):
         """Тест В связанные привычки могут попадать только привычки с признаком приятной привычки """
         data = {
@@ -160,24 +176,55 @@ class HabitsTestCase(APITestCase):
         response = self.client.post("/habbit/habit/create/", data=data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_validate_periodicity(self):
+        """Тест Привычку нельзя выполнять реже, чем 1 раз в 7 дней."""
 
-    # def test_validate_periodicity(self):
-    #     """Тест создания привычки с валидатором validate_periodicity"""
-    #
-    #     data = {
-    #
-    #         "place": "Деревня",
-    #         "time": "00:00",
-    #         "activity": "Пить",
-    #         "good_habit_sign": False,
-    #         "periodicity": 2,
-    #         "reward": "",
-    #         "execution_time": "00:02:00",
-    #         "of_publicity": True,
-    #         "user": self.user.id
-    #
-    #     }
-    #     response = self.client.post("/habbit/habit/create/", data=data)
-    #     print(response.json())
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = {
+
+            "place": "Деревня",
+            "time": "00:00",
+            "activity": "Пить",
+            "good_habit_sign": False,
+            "periodicity": 10,
+            "reward": "",
+            "execution_time": "00:02:00",
+            "of_publicity": True,
+            "user": self.user.id
+
+        }
+        with self.assertRaises(ValidationError) as context:
+            self.client.post("/habbit/habit/create/", data=data)
+
+        self.assertEqual(
+            context.exception.messages[0],
+            "Привычку нельзя выполнять реже, чем 1 раз в 7 дней."
+        )
+
+
+
+
+    def test_validate_execution_time(self):
+        """Тест: Время выполнения не может быть больше 120 секунд."""
+        data = {
+
+            "place": "Деревня",
+            "time": "00:00",
+            "activity": "Пить",
+            "good_habit_sign": False,
+            "periodicity": 4,
+            "reward": "",
+            "execution_time": "00:03:00",
+            "of_publicity": True,
+            "user": self.user.id
+        }
+
+        with self.assertRaises(ValidationError) as context:
+            self.client.post("/habbit/habit/create/", data=data)
+
+        self.assertEqual(
+            context.exception.messages[0],
+            "Время выполнения не может быть больше 120 секунд."
+        )
+
+
 
