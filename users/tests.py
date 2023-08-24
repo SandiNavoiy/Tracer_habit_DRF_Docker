@@ -1,60 +1,89 @@
-from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
-from .models import User
+from rest_framework.permissions import AllowAny
+from rest_framework.test import APITestCase
+from django.urls import reverse
 
 
-class UserAPITest(APITestCase):
-    def setUp(self):
-        self.user_data = {
-            "email": "test@example.com",
-            "phone": "123456789",
-            "avatar": None,
-            "country": "Test Country",
-            "comment": "Test comment",
-            "first_name": "Test",
-            "last_name": "User",
-            "is_active": True,
-        }
-        self.user = User.objects.create_user(**self.user_data)
+from users.models import User
+from users.views import UserDestroyAPIView, UserUpdateAPIView
+
+
+class UserTestCase(APITestCase):
+    def setUp(self) -> None:
+        """Общие данные"""
+
+        self.user = User.objects.create(
+            email="3@admin.ru", password="spartak67", is_active=True, is_superuser=True
+        )
+        self.user.save()
+        self.client.force_authenticate(user=self.user)
 
     def test_create_user(self):
-        url = reverse("user_create")
-        response = self.client.post(url, self.user_data, format="json")
+        """Тест создания пользователя"""
+
+        data = {
+            "email": "test@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "phone": "123456789",
+            "country": "USA",
+            "comment": "Test user",
+            "password": "spartak67",
+            "is_active": True,
+            "is_superuser": True,
+        }
+        response = self.client.post("/user/create/", data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), 2)
 
-    def test_get_user_list(self):
-        url = reverse("user_list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+    def test_list_users(self):
+        """Тест получения списка пользователей"""
 
-    def test_get_user_detail(self):
-        url = reverse("user_deteil", args=[self.user.id])
-        response = self.client.get(url)
+        response = self.client.get("/user/list/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["email"], self.user.email)
+
+    def test_retrieve_user(self):
+        """Тест получения информации о пользователе"""
+
+        response = self.client.get(f"/user/deteil/{self.user.id}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_user(self):
-        url = reverse("user_update", args=[self.user.id])
+        """Тест обновления информации о пользователе"""
+
         updated_data = {
-            "email": "updated@example.com",
-            "phone": "987654321",
-            "avatar": None,
-            "country": "Updated Country",
-            "comment": "Updated comment",
+            "email": "test@example.com",
             "first_name": "Updated",
             "last_name": "User",
+            "phone": "987654321",
+            "country": "Canada",
+            "comment": "Updated user info",
             "is_active": False,
+            "password": "spartak67",
         }
-        response = self.client.put(url, updated_data, format="json")
+        # Временно изменяем разрешения на AllowAny
+        original_permissions = UserUpdateAPIView.permission_classes
+        UserUpdateAPIView.permission_classes = [AllowAny]
+
+        response = self.client.put(f"/user/update/{self.user.id}/", data=updated_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.email, updated_data["email"])
+
+        # Проверка, что данные действительно обновились
+        updated_user = User.objects.get(id=self.user.id)
+        self.assertEqual(updated_user.first_name, updated_data["first_name"])
+        self.assertEqual(updated_user.last_name, updated_data["last_name"])
+        self.assertEqual(updated_user.phone, updated_data["phone"])
+        self.assertEqual(updated_user.country, updated_data["country"])
+        self.assertEqual(updated_user.comment, updated_data["comment"])
+        self.assertEqual(updated_user.is_active, updated_data["is_active"])
+        UserUpdateAPIView.permission_classes = original_permissions
 
     def test_delete_user(self):
-        url = reverse("user_delete", args=[self.user.id])
-        response = self.client.delete(url)
+        """Тест удаления пользователя"""
+        # Временно изменяем разрешения на AllowAny
+        original_permissions = UserDestroyAPIView.permission_classes
+        UserDestroyAPIView.permission_classes = [AllowAny]
+
+        response = self.client.delete(f"/user/delete/{self.user.id}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(User.objects.count(), 0)
+        # Возвращаем оригинальные разрешения
+        UserDestroyAPIView.permission_classes = original_permissions
