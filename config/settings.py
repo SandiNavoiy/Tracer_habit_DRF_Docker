@@ -201,7 +201,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     "send_message": {
         "task": "Atomic_Habits.tasks.send_reminders",
-        "schedule": timedelta(hours=12),
+        "schedule": timedelta(hours=12),  # переодичность проверки 12 часов
     },
 }
 
