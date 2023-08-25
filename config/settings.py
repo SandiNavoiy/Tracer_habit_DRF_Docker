@@ -200,7 +200,10 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 # Настройка переодической задачи
 CELERY_BEAT_SCHEDULE = {
     "send_message": {
-        "task": "Atomic_Habits.tasks.telegramm_messege",
-        "schedule": timedelta(seconds=10),
+        "task": "Atomic_Habits.tasks.send_reminders",
+        "schedule": timedelta(hours=12),
     },
 }
+
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
