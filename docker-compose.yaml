@@ -5,7 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile # Определяет, как собирать образ для Django из Dockerfile.
-    networks:  # Подключение к пользовательской сети
+    container_name: web
+    networks: # Подключение к пользовательской сети
       - myNet
     ports:
       - "8000:8000"  # Проксирование порта 8000 контейнера на порт 8000 хоста.
@@ -15,11 +16,14 @@ services:
     restart: unless-stopped  # Добавление настройки для перезапуска контейнера, всегда перезапуск
 
 
-# PostgreSQL сервис
+  # PostgreSQL сервис
   db:
     restart: always
+    container_name: db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
     image: postgres
-    networks:  # Подключение к пользовательской сети
+    networks: # Подключение к пользовательской сети
       - myNet
     ports:
       - "5432:5432"  # Проксирование порта 5432 контейнера на порт 5432 хоста.
@@ -31,11 +35,12 @@ services:
 
 
 
-# Redis сервис
+  # Redis сервис
   redis:
     image: redis:latest
     container_name: redis
-    networks:  # Подключение к пользовательской сети
+    command: redis-server --save 20 1 --loglevel warning
+    networks: # Подключение к пользовательской сети
       - myNet
 
     ports:
@@ -46,12 +51,12 @@ services:
       timeout: 5s  # Таймаут для проверки.
       retries: 3  # Количество попыток проверки.
     restart: unless-stopped  # Добавление настройки для перезапуска контейнера, всегда перезапуск
-# Celery  сервис
+  # Celery  сервис
   celery:
     restart: always
     build: .
     container_name: celery_app
-    networks:  # Подключение к пользовательской сети
+    networks: # Подключение к пользовательской сети
       - myNet
 
     depends_on:
@@ -62,9 +67,10 @@ services:
       interval: 10s   # Интервал между проверками состояния.
       timeout: 5s  # Таймаут для проверки.
       retries: 3  # Количество попыток проверки.
+    command: celery -A config worker -l INFO
 
 
-# Celery   beat сервис
+  # Celery   beat сервис
   celery_beat:
     build: .
     container_name: celery_beat
@@ -74,4 +80,7 @@ services:
 networks:
   myNet:
     driver: bridge
+# для сохранения данных между запусками
+volumes:
+  postgres_data:
 
