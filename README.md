@@ -20,3 +20,4 @@
 Создание суперюзера: python manage.py create_superuser
 
 тестирование производилось командой coverage run --source='.' manage.py test
+-----
