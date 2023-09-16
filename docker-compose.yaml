@@ -8,6 +8,8 @@ services:
     container_name: web
     networks: # Подключение к пользовательской сети
       - myNet
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"  # Проксирование порта 8000 контейнера на порт 8000 хоста.
     depends_on:
@@ -15,6 +17,8 @@ services:
         condition: service_healthy   # установка зависимостей и "здоровья" БД"
       redis:
         condition: service_healthy   #установка зависимостей и "здоровья" БД redis"
+    env_file:
+      - .env
     restart: unless-stopped  # Добавление настройки для перезапуска контейнера, всегда перезапуск
 
 
@@ -24,6 +28,8 @@ services:
     container_name: db
     volumes:
       - postgres_data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
     image: postgres
     networks: # Подключение к пользовательской сети
       - myNet
@@ -47,6 +53,8 @@ services:
 
     ports:
       - "6379:6379"  # Проксирование порта 6379 контейнера на порт 6379 хоста.
+    env_file:
+      - .env
     healthcheck: # Определение healthcheck для контейнера redis.
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s   # Интервал между проверками состояния.
@@ -60,6 +68,8 @@ services:
     container_name: celery_app
     tty: true
     command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
 
     networks: # Подключение к пользовательской сети
       - myNet
@@ -67,6 +77,8 @@ services:
     depends_on:
       - db  # Указывает, что этот сервис зависит от сервиса "db".
       - redis  # Указывает, что этот сервис зависит от сервиса "redis"
+    env_file:
+      - .env
     healthcheck: # Определение healthcheck для контейнера celery.
       test: [ "CMD", "celery", "inspect", "ping" ]
       interval: 10s   # Интервал между проверками состояния.
@@ -81,8 +93,12 @@ services:
     container_name: celery_beat
     tty: true
     command: celery -A config beat --loglevel=info
+    volumes:
+      - .:/app
     depends_on:
       - celery
+    env_file:
+      - .env
 # Пользовательская сеть
 networks:
   myNet:
