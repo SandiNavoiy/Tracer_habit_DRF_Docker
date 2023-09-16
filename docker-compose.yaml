@@ -11,8 +11,10 @@ services:
     ports:
       - "8000:8000"  # Проксирование порта 8000 контейнера на порт 8000 хоста.
     depends_on:
-      - db # Указывает, что этот сервис зависит от сервиса "db".
-      - redis   # Указывает, что этот сервис зависит от сервиса "redis".
+      db:
+        condition: service_healthy   # установка зависимостей и "здоровья" БД"
+      redis:
+        condition: service_healthy   #установка зависимостей и "здоровья" БД redis"
     restart: unless-stopped  # Добавление настройки для перезапуска контейнера, всегда перезапуск
 
 
@@ -56,6 +58,9 @@ services:
     restart: always
     build: .
     container_name: celery_app
+    tty: true
+    command: celery -A config worker --loglevel=info
+
     networks: # Подключение к пользовательской сети
       - myNet
 
@@ -67,13 +72,15 @@ services:
       interval: 10s   # Интервал между проверками состояния.
       timeout: 5s  # Таймаут для проверки.
       retries: 3  # Количество попыток проверки.
-    command: celery -A config worker -l INFO
+
 
 
   # Celery   beat сервис
   celery_beat:
     build: .
     container_name: celery_beat
+    tty: true
+    command: celery -A config beat --loglevel=info
     depends_on:
       - celery
 # Пользовательская сеть
