@@ -32,13 +32,14 @@ Docker
 Переменные окружения, храняться в файле .env 
 Для его создания необходимо переименовать .env-sampel в .env и заполнить своими данными
 Пример:
-CACHE_ENABLED=True (по умолчанию)
-DATABASES_NAME= Ваше название базы данных
-DATABASES_USER= пользователь баз данных
-DATABASES_PASSWORD= его пароль
-DEBUG=True (по умолчанию)
-CACHES_LOCATION=redis://127.0.0.1:6379  - расположение доступа и порт  к REDIS  (по умолчанию)
-TELEGRAM_BOT_TOKEN= токен Вашего телеграм бота
+ALLOWED_HOSTS=*
+
+POSTGRES_DB=<DATABASES_NAME>
+POSTGRES_USER=<DATABASES_USER>
+POSTGRES_PASSWORD=<DATABASES_PASSWORD>
+DATABASES_HOST=db
+TG_API_KEY=<TG_API_KEY>
+CELERY=redis://redis:6379
 Запуск Docker проекта:
      --- docker-compose build
      --- docker-compose up

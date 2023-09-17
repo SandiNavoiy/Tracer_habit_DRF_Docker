@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-z-os*%o=c=_!5l-n6p3c1$6v#)c%bdpgisd2dt8&62ihsv3d9u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 
 
 # Application definition
@@ -88,11 +88,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DATABASES_NAME"),  # Название БД
-        "USER": os.getenv("DATABASES_USER"),  # Пользователь для подключения
-        "PASSWORD": os.getenv("DATABASES_PASSWORD"),  # Пароль для этого пользователя
-        "HOST": "127.0.0.1",  # Адрес, на котором развернут сервер БД
-        "PORT": 5432,  # Порт, на котором работает сервер БД
+        "NAME": os.getenv("POSTGRES_DB"),  # Название БД
+        "USER": os.getenv("POSTGRES_USER"),  # Пользователь для подключения
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),  # Пароль для этого пользователя
+        'HOST': os.getenv('DATABASES_HOST'),  # Адрес, на котором развернут сервер БД
+
     }
 }
 
@@ -184,10 +184,10 @@ CSRF_TRUSTED_ORIGINS = [
 # Настройки для Celery
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = "redis://localhost:6379"  # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = os.getenv('CELERY')  # Например, Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = os.getenv('CELERY')
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
