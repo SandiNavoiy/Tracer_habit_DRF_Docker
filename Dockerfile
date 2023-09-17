@@ -1,7 +1,7 @@
 # Используйте базовый образ Python
 FROM python:3
 # Установите рабочую директорию внутри контейнера
-WORKDIR /web
+WORKDIR /app
 # Копируйте зависимости проекта
 COPY ./requirements.txt .
 
