@@ -184,10 +184,10 @@ CSRF_TRUSTED_ORIGINS = [
 # Настройки для Celery
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = os.getenv('CELERY')  # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = "redis://redis:6379"  # Например, Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = os.getenv('CELERY')
+CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"

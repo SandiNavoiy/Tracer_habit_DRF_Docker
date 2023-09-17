@@ -25,18 +25,23 @@ services:
   # PostgreSQL сервис
   db:
     restart: always
+    image: postgres:latest
+
     container_name: db
     volumes:
-      - postgres_data:/var/lib/postgresql/data/pgdata
-    env_file:
-      - .env
-    image: postgres
+      - postgres_data:/var/lib/postgresql/data1/pgdata
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=db
+      - POSTGRES_HOST_AUTH_METHOD=md5
+
     networks: # Подключение к пользовательской сети
       - myNet
     ports:
       - "5432:5432"  # Проксирование порта 5432 контейнера на порт 5432 хоста.
     healthcheck: # Определение healthcheck для контейнера PostgreSQL.
-      test: [ 'CMD-SHELL', 'pg_isready' ]
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
       interval: 10s # Интервал между проверками состояния.
       timeout: 5s   # Таймаут для проверки.
       retries: 5  # Количество попыток проверки.
@@ -53,8 +58,7 @@ services:
 
     ports:
       - "6379:6379"  # Проксирование порта 6379 контейнера на порт 6379 хоста.
-    env_file:
-      - .env
+
     healthcheck: # Определение healthcheck для контейнера redis.
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s   # Интервал между проверками состояния.
@@ -77,8 +81,7 @@ services:
     depends_on:
       - db  # Указывает, что этот сервис зависит от сервиса "db".
       - redis  # Указывает, что этот сервис зависит от сервиса "redis"
-    env_file:
-      - .env
+
     healthcheck: # Определение healthcheck для контейнера celery.
       test: [ "CMD", "celery", "inspect", "ping" ]
       interval: 10s   # Интервал между проверками состояния.
@@ -97,8 +100,7 @@ services:
       - .:/app
     depends_on:
       - celery
-    env_file:
-      - .env
+
 # Пользовательская сеть
 networks:
   myNet:

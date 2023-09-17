@@ -39,7 +39,7 @@ POSTGRES_USER=<DATABASES_USER>
 POSTGRES_PASSWORD=<DATABASES_PASSWORD>
 DATABASES_HOST=db
 TG_API_KEY=<TG_API_KEY>
-CELERY=redis://redis:6379
+
 Запуск Docker проекта:
      --- docker-compose build
      --- docker-compose up
