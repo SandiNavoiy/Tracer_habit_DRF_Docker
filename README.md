@@ -1,4 +1,4 @@
-# Kurs_works_DRF
+# Kurs_works_DRF Docker
 
 Сервис, который получает от пользователя привычки и напоминает пользователю об их выполнении.
 
@@ -9,14 +9,39 @@
 
 ✅Настроены периодические задачи через celery на отправку сообщений в телеграм.
 
-✅ Сделана интергация с телеграм, подключается запуском файла tg.py. При подключении активируется бот и апользователь при
+✅ Сделана интеграция с телеграм, подключается запуском файла tg.py. При подключении активируется бот и пользователь при
 наборе /start получает сообщения от бота, если у него не занесены привычки. Если же занесены, то бот уведомляет об их
 выполнении.
+Прежде чем начать использовать проект нужно:
+Установить на ПК пакет docker и docker-compose
+Создать файл .env для переменного окружения.
 
-Активация локального окружения : venv/Scripts/Activate.ps1
+Переменные окружения, храняться в файле .env 
+Для его создания необходимо переименовать .env-sampel в .env и заполнить своими данными
+Пример:
+ALLOWED_HOSTS=*
+POSTGRES_DB=db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DATABASES_HOST=db
+TELEGRAM_BOT_TOKEN=
 
-Установка зависимостей: pip install -r requirements.txt
+Стек технологий:
 
-Создание суперюзера: python manage.py create_superuser
+Django Rest Framework
+Celery
+PostgreSQL
+Flake8
+Unittest
+drf-yasg
+JWT
+Telegram
+Docker
 
-тестирование производилось командой coverage run --source='.' manage.py test
+Запуск Docker проекта:
+     --- docker-compose build
+     --- docker-compose up
+
+P.S:
+- Командой python manage.py create_superuser можно будет добавить учетная запись 2@admin.ru с паролем spartak67 что бы войти в админку
+- если команды будут выполняться с ошибкой необходимо  использовать повышение прав sudo
