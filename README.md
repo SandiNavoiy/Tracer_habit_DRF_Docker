@@ -16,6 +16,16 @@
 Установить на ПК пакет docker и docker-compose
 Создать файл .env для переменного окружения.
 
+Переменные окружения, храняться в файле .env 
+Для его создания необходимо переименовать .env-sampel в .env и заполнить своими данными
+Пример:
+ALLOWED_HOSTS=*
+POSTGRES_DB=db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DATABASES_HOST=db
+TELEGRAM_BOT_TOKEN=
+
 Стек технологий:
 
 Django Rest Framework
@@ -28,22 +38,10 @@ JWT
 Telegram
 Docker
 
-
-Переменные окружения, храняться в файле .env 
-Для его создания необходимо переименовать .env-sampel в .env и заполнить своими данными
-Пример:
-ALLOWED_HOSTS=*
-
-POSTGRES_DB=<DATABASES_NAME>
-POSTGRES_USER=<DATABASES_USER>
-POSTGRES_PASSWORD=<DATABASES_PASSWORD>
-DATABASES_HOST=db
-TG_API_KEY=<TG_API_KEY>
-
 Запуск Docker проекта:
      --- docker-compose build
      --- docker-compose up
 
 P.S:
-- будет добавлена учетная запись 2@admin.ru с паролем spartak67 что бы войти в админку
+- Командой python manage.py create_superuser можно будет добавить учетная запись 2@admin.ru с паролем spartak67 что бы войти в админку
 - если команды будут выполняться с ошибкой необходимо  использовать повышение прав sudo
